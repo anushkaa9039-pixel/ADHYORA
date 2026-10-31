@@ -56,8 +56,13 @@ async function call(system: string, messages: Msg[], max = 900, timeout = 45000,
   if (p === 'gemini') {
     // A model name can be missing for a given key or retired; on 404 try the next known model instead of failing.
     const tried = [modelName(), 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash', 'gemini-2.5-flash-lite'].filter((m, i, a) => m && a.indexOf(m) === i);
+    // Also move on when a model is overloaded (503/500/502) or out of quota (429): another model is often free. Retry the list once after a short pause.
+    const skip = (st: number) => st === 404 || st === 429 || st === 500 || st === 502 || st === 503;
     r = await geminiCall(tried[0]);
-    for (let i = 1; i < tried.length && r.status === 404; i++) r = await geminiCall(tried[i]);
+    for (let round = 0; round < 2 && skip(r.status); round++) {
+      if (round === 1) await new Promise((ok) => setTimeout(ok, 2000));
+      for (let i = round === 0 ? 1 : 0; i < tried.length && skip(r.status); i++) r = await geminiCall(tried[i]);
+    }
   } else r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
