@@ -36,7 +36,7 @@ body{background:var(--paper);color:var(--ink);font:400 16px/1.55 Figtree,system-
 .arr:hover{background:#fff;color:var(--navy)}.l{left:22px}.rt{right:22px}
 .foot{position:absolute;left:32px;right:32px;bottom:18px;display:flex;justify-content:space-between;font-size:12px;color:#9DB59F}
 .cur{position:fixed;left:0;top:0;width:58px;height:58px;margin:-29px 0 0 -29px;z-index:200;pointer-events:none;display:none}
-@media (pointer:fine){.cur{display:block}html,body,button,a,input,select{cursor:none}}
+@media (pointer:fine){.cur{display:none}html.cur-ready .cur{display:block}html.cur-ready,html.cur-ready *{cursor:none!important}}
 .cur .ring{position:absolute;inset:0;border:1.5px solid #fff;border-radius:50%;mix-blend-mode:difference;transition:transform .5s var(--ease),background .4s var(--ease)}
 .cur .dot{position:absolute;left:26px;top:26px;width:6px;height:6px;border-radius:50%;background:#fff;mix-blend-mode:difference;transition:transform .4s var(--ease)}
 .cur .lb{position:absolute;inset:0;display:grid;place-items:center;font:800 12px Figtree;color:var(--ink);transform:scale(0);transition:transform .45s var(--ease)}

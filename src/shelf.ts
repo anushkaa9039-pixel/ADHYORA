@@ -67,7 +67,7 @@ L('keydown',e=>{if(typing(e))return;if(isOpen){if(e.key==='Escape')closeD();retu
 if(e.key==='ArrowLeft'){T=Math.round(T)-1;go()}if(e.key==='ArrowRight'){T=Math.round(T)+1;go()}if(e.key==='Enter'&&document.activeElement===document.body)launch()});
 sh.addEventListener('wheel',e=>{const dl=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:0;if(!dl)return;e.preventDefault();T=Math.max(0,Math.min(N-1,T+dl/(ws+gap)*.5));clearTimeout(wt);wt=setTimeout(()=>{T=Math.round(T);go()},160);render()},{passive:false});
 sh.addEventListener('pointerdown',e=>{drag={x:e.clientX,T0:T};moved=false});
-L('pointermove',e=>{mx=e.clientX;my=e.clientY;if(drag){const dx=e.clientX-drag.x;if(Math.abs(dx)>5)moved=true;if(moved){T=Math.max(0,Math.min(N-1,drag.T0-dx/(ws+gap)));render()}}});
+L('pointermove',e=>{mx=e.clientX;my=e.clientY;if(e.pointerType!=='touch'){cur.style.transform=`translate3d(${mx}px,${my}px,0)`;if(RM){cx=mx;cy=my}document.documentElement.classList.add('cur-ready')}if(drag){const dx=e.clientX-drag.x;if(Math.abs(dx)>5)moved=true;if(moved){T=Math.max(0,Math.min(N-1,drag.T0-dx/(ws+gap)));render()}}});
 L('pointerup',()=>{if(drag&&moved){T=Math.round(T);go();setTimeout(()=>moved=false,0)}drag=null});
 $('openb').onclick=()=>launch();
 /* a book opens its own interface directly */
@@ -106,5 +106,5 @@ L('resize',measure);document.fonts&&document.fonts.ready.then(()=>{if(!dead)meas
 setActive(4,1);measure();if(!RM)raf=requestAnimationFrame(frame);
 
 
-return ()=>{dead=true;cancelAnimationFrame(raf);offs.forEach(f=>f());st.innerHTML='';$('ct').innerHTML='';$('cs').innerHTML='';document.body.style.overflow=''}
+return ()=>{dead=true;document.documentElement.classList.remove('cur-ready');cancelAnimationFrame(raf);offs.forEach(f=>f());st.innerHTML='';$('ct').innerHTML='';$('cs').innerHTML='';document.body.style.overflow=''}
 }
