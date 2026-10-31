@@ -36,43 +36,62 @@ export function explainAiError(e: unknown): string {
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
+/** The Gemini model that last worked on this server instance (reused on the next call). */
+let workingGemini = '';
 async function call(system: string, messages: Msg[], max = 900, timeout = 45000, jsonOut = false): Promise<string> {
   const p = provider();
   if (!p) throw new AiError(503, 'No AI key is set on the server.');
-  const signal = AbortSignal.timeout(Math.min(timeout, LIMIT));
+  const deadline = Date.now() + Math.min(timeout, LIMIT);
   const key = keyOf(p);
-  const geminiCall = (model: string) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
-      // Gemini 2.5 models spend part of the output budget on hidden thinking, so the cap is generous.
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: messages.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-        generationConfig: { maxOutputTokens: Math.min(max * 3 + 1500, 20000), ...(jsonOut ? { responseMimeType: 'application/json' } : {}) },
-      }),
-      signal,
-    });
+  const gemBody = JSON.stringify({
+    systemInstruction: { parts: [{ text: system }] },
+    contents: messages.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
+    // Gemini 2.5 models spend part of the output budget on hidden thinking, so the cap is generous.
+    generationConfig: { maxOutputTokens: Math.min(max * 3 + 1500, 20000), ...(jsonOut ? { responseMimeType: 'application/json' } : {}) },
+  });
+  const geminiCall = (model: string, ms: number) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+    method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': key }, body: gemBody, signal: AbortSignal.timeout(ms),
+  });
   let r: Response;
+  let shown = 0; // status to report when a fallback chain ends
   if (p === 'gemini') {
-    // A model name can be missing for a given key or retired; on 404 try the next known model instead of failing.
-    const tried = [modelName(), 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash', 'gemini-2.5-flash-lite'].filter((m, i, a) => m && a.indexOf(m) === i);
-    // Also move on when a model is overloaded (503/500/502) or out of quota (429): another model is often free. Retry the list once after a short pause.
-    const skip = (st: number) => st === 404 || st === 429 || st === 500 || st === 502 || st === 503;
-    r = await geminiCall(tried[0]);
-    for (let round = 0; round < 2 && skip(r.status); round++) {
-      if (round === 1) await new Promise((ok) => setTimeout(ok, 2000));
-      for (let i = round === 0 ? 1 : 0; i < tried.length && skip(r.status); i++) r = await geminiCall(tried[i]);
+    // Try the chosen model first. If it does not exist (404) or is busy/over quota, try the others, each with its own share of the time.
+    const names = [workingGemini, modelName(), 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-flash-latest', 'gemini-flash-lite-latest'].filter((m, i, a): m is string => !!m && a.indexOf(m) === i);
+    const retry = (st: number) => st === 404 || st === 429 || st === 500 || st === 502 || st === 503;
+    let worst = 0; r = undefined as unknown as Response;
+    for (let i = 0; i < names.length; i++) {
+      const left = deadline - Date.now();
+      if (left < 3000) break;
+      try { r = await geminiCall(names[i], Math.min(left, i === 0 ? 30000 : 20000)); } catch { continue; }
+      if (r.ok) { workingGemini = names[i]; break; }
+      if (!retry(r.status)) break;
+      if (r.status !== 404) worst = r.status;
     }
+    // Every guessed name was missing: ask Google which models this key can really use, and try those.
+    if (r && !r.ok && r.status === 404 && worst === 0 && deadline - Date.now() > 5000) {
+      try {
+        const lr = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': key }, signal: AbortSignal.timeout(8000) });
+        const lj: any = await lr.json();
+        const ok: string[] = (lj.models ?? []).filter((m: any) => (m.supportedGenerationMethods ?? []).includes('generateContent') && /flash/.test(m.name) && !/image|tts|live|audio|embed|thinking|exp|preview/.test(m.name)).map((m: any) => String(m.name).replace(/^models\//, ''));
+        for (const m of ok.filter((m) => !names.includes(m)).slice(0, 3)) {
+          const left = deadline - Date.now(); if (left < 3000) break;
+          try { const rr = await geminiCall(m, Math.min(left, 20000)); r = rr; if (rr.ok) { workingGemini = m; break; } } catch { /* next */ }
+        }
+      } catch { /* keep the 404 */ }
+    }
+    if (!r) throw new AiError(504, 'The AI took too long to answer.');
+    // Report the most useful reason: a busy/quota error beats a missing-model error from the fallbacks.
+    if (!r.ok && r.status === 404 && worst) shown = worst;
   } else r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: modelName(), max_tokens: max, system, messages }),
-      signal,
-    });
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: modelName(), max_tokens: max, system, messages }),
+    signal: AbortSignal.timeout(Math.max(1000, deadline - Date.now())),
+  });
   if (!r.ok) {
     const detail: string = await r.json().then((j: any) => String(j?.error?.message ?? '')).catch(() => '');
     // Gemini reports a bad key as HTTP 400 "API key not valid".
-    const st = p === 'gemini' && r.status === 400 && /api key|api_key/i.test(detail) ? 401 : r.status;
+    const st = p === 'gemini' && r.status === 400 && /api key|api_key/i.test(detail) ? 401 : shown || r.status;
     throw new AiError(st, `AI request failed (${r.status})${detail ? ': ' + detail : ''}`);
   }
   const j: any = await r.json();
