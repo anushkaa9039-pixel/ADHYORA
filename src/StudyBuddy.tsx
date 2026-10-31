@@ -28,7 +28,7 @@ export function StudyBuddy() {
   const [hist, setHist] = useState<Msg[]>([]);
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
-  const [hint, setHint] = useState('Enter sends. Shift+Enter adds a new line.');
+  const [hint] = useState('Enter sends. Shift+Enter adds a new line.');
   const [needs, setNeeds] = useState(false);
   const ctl = useRef<AbortController | null>(null);
   const box = useRef<HTMLDivElement>(null);
@@ -36,7 +36,6 @@ export function StudyBuddy() {
 
   useEffect(() => {
     try { const s = JSON.parse(localStorage.getItem('adh_chat') || 'null'); if (s) { setHist(s.h || []); setTopic(s.t || ''); } } catch { /* ignore */ }
-    api<{ ai: boolean }>('/meta').then((m) => { if (!m.ai) setHint('Study Buddy is in limited offline mode: the server has no AI key (ANTHROPIC_API_KEY or GEMINI_API_KEY), so it cannot hold a real conversation. Add one in the .env file and restart, or in the Vercel Environment Variables and redeploy.'); }).catch(() => {});
   }, []);
   useEffect(() => { try { localStorage.setItem('adh_chat', JSON.stringify({ h: hist.slice(-30), t: topic })); } catch { /* ignore */ } box.current?.scrollTo(0, box.current.scrollHeight); }, [hist, topic]);
 

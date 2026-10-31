@@ -74,10 +74,7 @@ export function Workspace() {
   return (
     <section id="workspace" className="bg-paper px-4 py-16 text-ink md:px-8">
       <div className="mx-auto max-w-[1060px]">
-        {!solo && <><h2 className="mb-1 font-dsp text-[clamp(30px,4vw,48px)] font-extrabold leading-none text-wine">Your workspace</h2>
-        <p className="mb-6 max-w-[60ch] text-[#3b4a3b]">Your scores come only from your own answers. No account needed.</p></>}
         {err && <p className="rounded bg-beige p-3 text-sm text-wine">{err}</p>}
-        {meta && !meta.ai && <p className="mb-4 rounded bg-beige p-3 text-sm" role="status"><b>AI is off on this server.</b> Class 10 Physics and Mathematics work without it. Every other subject, AI-written syllabus and tests, and Study Buddy chat need an AI key: set <code>ANTHROPIC_API_KEY</code> or <code>GEMINI_API_KEY</code> (the <code>.env</code> file locally, Environment Variables on Vercel, then redeploy).</p>}
         {editing && <Pick initial={sel} name={name} onDone={choose} />}
         {!editing && sel && (
           <div className="mb-5 flex flex-wrap items-center gap-2 rounded-lg bg-sage px-4 py-2 text-sm">

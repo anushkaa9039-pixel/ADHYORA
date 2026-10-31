@@ -30,11 +30,11 @@ export function Landing() {
       <ErrorBoundary><Workspace /></ErrorBoundary>
       <ErrorBoundary><StudyBuddy /></ErrorBoundary>
 
-      <section className="doc" id="how">
+      <section className="doc how" id="how">
         <h2>How It Works</h2>
         <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {([['Pick', 'Enter your name, then choose your class and subject. No account, no password.', '#A9C3A3'], ['Test', 'A short test finds what you already know.', '#9CBFB0'], ['See', 'Your scores show which topics are strong and which are weak.', '#E8B04A'], ['Practise', 'Questions target your weak topics and get harder as you improve.', '#8FB59E'], ['Revise', 'Topics come back just before you would forget them.', '#E4D5AE']] as const).map(([t, d, c], i) => (
-            <li key={t} className="rounded-2xl p-5" style={{ background: c, color: '#1B2B22' }}>
+            <li key={t} className="min-w-0 break-words rounded-2xl p-5" style={{ background: c, color: '#1B2B22' }}>
               <span className="mb-3 grid h-9 w-9 place-items-center rounded-full bg-navy font-dsp text-lg font-extrabold text-white">{i + 1}</span>
               <h3 className="mb-1 font-dsp text-2xl font-extrabold">{t}</h3>
               <p className="text-sm leading-snug">{d}</p>

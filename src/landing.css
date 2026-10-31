@@ -89,3 +89,5 @@ body{background:var(--paper);color:var(--ink);font:400 16px/1.55 Figtree,system-
 @media (max-width:767px){:root{--H:min(60vw,38svh)}.bar{height:60px;padding:0 16px}.hl{top:66px}.hl p{display:none}.l{left:6px}.rt{right:6px}.arr{top:calc(50% + var(--H)/2 + 90px)}
 .cap .t{font-size:24px}.foot{left:16px;right:16px;font-size:10px}.dg{grid-template-columns:1fr;padding:84px 22px 40px}.dr{order:-1}.cls{left:16px;top:16px}
 .doc{grid-template-columns:1fr;padding:56px 22px}.pg{columns:1}.chatw{padding:56px 14px}.bub{max-width:94%}}
+
+.doc.how{display:block;max-width:1160px}.doc.how h2{margin-bottom:28px}.doc.how ol{list-style:none;padding:0;margin:0}.doc.how li{overflow-wrap:anywhere;hyphens:auto}
