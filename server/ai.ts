@@ -41,8 +41,7 @@ async function call(system: string, messages: Msg[], max = 900, timeout = 45000,
   if (!p) throw new AiError(503, 'No AI key is set on the server.');
   const signal = AbortSignal.timeout(Math.min(timeout, LIMIT));
   const key = keyOf(p);
-  const r = p === 'gemini'
-    ? await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelName())}:generateContent`, {
+  const geminiCall = (model: string) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
       // Gemini 2.5 models spend part of the output budget on hidden thinking, so the cap is generous.
@@ -52,8 +51,14 @@ async function call(system: string, messages: Msg[], max = 900, timeout = 45000,
         generationConfig: { maxOutputTokens: Math.min(max * 3 + 1500, 20000), ...(jsonOut ? { responseMimeType: 'application/json' } : {}) },
       }),
       signal,
-    })
-    : await fetch('https://api.anthropic.com/v1/messages', {
+    });
+  let r: Response;
+  if (p === 'gemini') {
+    // A model name can be missing for a given key or retired; on 404 try the next known model instead of failing.
+    const tried = [modelName(), 'gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash', 'gemini-2.5-flash-lite'].filter((m, i, a) => m && a.indexOf(m) === i);
+    r = await geminiCall(tried[0]);
+    for (let i = 1; i < tried.length && r.status === 404; i++) r = await geminiCall(tried[i]);
+  } else r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: modelName(), max_tokens: max, system, messages }),
