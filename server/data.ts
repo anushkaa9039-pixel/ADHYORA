@@ -1,0 +1,148 @@
+// Class 10 Physics (CBSE): one complete syllabus graph, author-written question bank, misconception library.
+export type Concept = { id: string; name: string; unit: string; pre: string[]; s: string };
+const PHYS: Omit<Concept, 's'>[] = [
+  { id: 'c1', name: 'Reflection of light', unit: 'Light', pre: [] },
+  { id: 'c2', name: 'Spherical mirrors and images', unit: 'Light', pre: ['c1'] },
+  { id: 'c3', name: 'Mirror formula and magnification', unit: 'Light', pre: ['c2'] },
+  { id: 'c4', name: "Refraction and Snell's law", unit: 'Light', pre: ['c1'] },
+  { id: 'c5', name: 'Lenses and image formation', unit: 'Light', pre: ['c4', 'c2'] },
+  { id: 'c6', name: 'Lens formula and power', unit: 'Light', pre: ['c5', 'c3'] },
+  { id: 'c7', name: 'Human eye and vision defects', unit: 'Human eye', pre: ['c5'] },
+  { id: 'c8', name: 'Dispersion and atmospheric refraction', unit: 'Human eye', pre: ['c4'] },
+  { id: 'c9', name: 'Charge, current and potential difference', unit: 'Electricity', pre: [] },
+  { id: 'c10', name: "Ohm's law and resistance", unit: 'Electricity', pre: ['c9'] },
+  { id: 'c11', name: 'Resistivity and factors of resistance', unit: 'Electricity', pre: ['c10'] },
+  { id: 'c12', name: 'Series and parallel circuits', unit: 'Electricity', pre: ['c10'] },
+  { id: 'c13', name: 'Electric power and heating effect', unit: 'Electricity', pre: ['c12'] },
+  { id: 'c14', name: 'Magnetic field and field lines', unit: 'Magnetism', pre: [] },
+  { id: 'c15', name: 'Magnetic field due to current', unit: 'Magnetism', pre: ['c14', 'c9'] },
+  { id: 'c16', name: 'Force on a conductor and the motor', unit: 'Magnetism', pre: ['c15'] },
+  { id: 'c17', name: 'Electromagnetic induction and generator', unit: 'Magnetism', pre: ['c16'] },
+];
+
+export const MISC: Record<string, { name: string; fix: string }> = {
+  m_virtual_screen: { name: 'Virtual images can be caught on a screen', fix: 'A virtual image is formed where rays only appear to meet, so no screen can show it. Only real images (rays actually meet) can be caught on a screen.' },
+  m_sign_convention: { name: 'Sign convention mixed up', fix: 'Measure all distances from the pole or optical centre. Distances along the incident light are positive, against it negative. For a real object u is negative; a concave mirror has negative f, a convex lens positive f.' },
+  m_real_inverted_always: { name: 'Every image from a concave mirror or convex lens is real and inverted', fix: 'That holds only when the object is beyond the focus. Between the focus and the pole (or optical centre) the image is virtual, erect and magnified.' },
+  m_bend_towards: { name: 'Direction of bending at a boundary reversed', fix: 'Going from a rarer to a denser medium, light slows down and bends towards the normal. Going denser to rarer, it bends away.' },
+  m_angle_surface: { name: 'Angles measured from the surface, not the normal', fix: 'Angles of incidence and reflection are always measured from the normal. A ray making 30 degrees with the surface has an angle of incidence of 60 degrees.' },
+  m_power_f: { name: 'Power taken as proportional to focal length', fix: 'Power is the reciprocal of focal length: P = 1/f with f in metres. A shorter focal length means a more powerful lens.' },
+  m_cm_units: { name: 'Focal length left in centimetres', fix: 'Convert focal length to metres before computing power in dioptres. 25 cm is 0.25 m, so P = 1/0.25 = +4 D.' },
+  m_eye_defect: { name: 'Myopia and hypermetropia confused', fix: 'Myopia: far objects blurred, image forms in front of the retina, corrected with a concave lens. Hypermetropia: near objects blurred, corrected with a convex lens.' },
+  m_prism_creates: { name: 'Prism or atmosphere adds colour', fix: 'White light already contains all colours. A prism separates them because each colour bends by a different amount; it creates none.' },
+  m_current_used: { name: 'Current is used up in a circuit', fix: 'Charge is conserved, so the same current leaves a component as enters it. What a bulb uses up is energy, not current.' },
+  m_r_depends_vi: { name: 'Resistance changes with voltage or current', fix: 'For a given conductor at constant temperature R = V/I is fixed. Doubling V doubles I, and R stays the same.' },
+  m_resist_area: { name: 'Resistance rises with cross-section area', fix: 'R = rho L / A. A thicker wire gives charge more room to flow, so resistance falls as area grows.' },
+  m_parallel_adds: { name: 'Parallel resistors added like series', fix: 'In parallel 1/R = 1/R1 + 1/R2, so the total is smaller than the smallest branch. Resistances add only in series.' },
+  m_power_energy: { name: 'Power and energy confused', fix: 'Power is a rate (watt). Energy is power times time. kWh = kW x hours, so a 100 W bulb for 10 h uses 1 kWh.' },
+  m_lines_cross: { name: 'Field lines can cross', fix: 'Two field lines never intersect: at a crossing point the field would need two directions at once.' },
+  m_lines_open: { name: 'Field lines start at N and stop at S', fix: 'Field lines are closed loops: outside the magnet they run N to S, and inside they continue S to N.' },
+  m_rule_mix: { name: 'Thumb rule and Fleming rule confused', fix: 'The right-hand thumb rule gives the field made by a current. Fleming left-hand rule gives the force on a current in a field (thumb force, forefinger field, middle finger current).' },
+  m_flux_static: { name: 'A still magnet induces current', fix: 'Induction needs a change in magnetic flux. A magnet at rest inside a coil gives no deflection; moving it does.' },
+  m_motor_gen: { name: 'Motor and generator confused', fix: 'A motor turns electrical energy into mechanical energy. A generator turns mechanical energy into electrical energy by induction.' },
+  m_n_multiply: { name: 'Refractive index multiplied instead of divided', fix: 'n = c / v, so v = c / n. Light is slower in glass: 3x10^8 / 1.5 = 2x10^8 m/s.' },
+  m_slab_nodeviation: { name: 'Glass slab thought to give no displacement', fix: 'Through a parallel-sided slab the emergent ray is parallel to the incident ray but shifted sideways (lateral displacement).' },
+};
+
+export type Q = { id: string; c: string; d: number; q: string; o: string[]; a: number; w: Record<number, string>; src: 'bank' | 'ai'; exp?: string };
+type Row = [string, number, string, string[], number, Record<number, string>];
+const R: Row[] = [
+  ['c1', 1, 'The angle of incidence is measured between the incident ray and the', ['mirror surface', 'normal to the surface', 'reflected ray', 'principal axis'], 1, { 0: 'm_angle_surface' }],
+  ['c1', 2, 'A ray strikes a plane mirror making 30 degrees with the mirror surface. The angle of reflection is', ['30 degrees', '60 degrees', '90 degrees', '120 degrees'], 1, { 0: 'm_angle_surface' }],
+  ['c1', 3, 'Two plane mirrors are at 90 degrees. A ray hits the first at an angle of incidence of 40 degrees. The angle of incidence at the second mirror is', ['40 degrees', '50 degrees', '90 degrees', '10 degrees'], 1, { 0: 'm_angle_surface' }],
+  ['c2', 1, 'A virtual image formed by a mirror', ['can be obtained on a screen', 'cannot be obtained on a screen', 'is always inverted', 'is always smaller'], 1, { 0: 'm_virtual_screen' }],
+  ['c2', 2, 'An object is placed between the pole and focus of a concave mirror. The image is', ['real, inverted, magnified', 'virtual, erect, magnified', 'virtual, erect, diminished', 'real, erect, magnified'], 1, { 0: 'm_real_inverted_always' }],
+  ['c2', 3, 'Which mirror always gives a virtual, erect, diminished image of a real object?', ['concave mirror', 'convex mirror', 'plane mirror', 'concave mirror, object beyond C'], 1, { 0: 'm_real_inverted_always' }],
+  ['c3', 1, 'With the sign convention, the focal length of a concave mirror of 15 cm is', ['+15 cm', '-15 cm', '+7.5 cm', '-30 cm'], 1, { 0: 'm_sign_convention' }],
+  ['c3', 2, 'An object is 30 cm from a concave mirror of focal length 10 cm. The image distance is', ['-15 cm', '+15 cm', '-7.5 cm', '-30 cm'], 0, { 1: 'm_sign_convention' }],
+  ['c3', 3, 'An object is 20 cm from a convex mirror of focal length 20 cm. The magnification is', ['+0.5', '-0.5', '+2', '-2'], 0, { 1: 'm_sign_convention' }],
+  ['c4', 1, 'Light going from air into glass bends', ['away from the normal', 'towards the normal', 'not at all', 'along the surface'], 1, { 0: 'm_bend_towards' }],
+  ['c4', 2, 'Glass has refractive index 1.5. Light travels at 3x10^8 m/s in air. Its speed in glass is', ['4.5x10^8 m/s', '2x10^8 m/s', '1.5x10^8 m/s', '3x10^8 m/s'], 1, { 0: 'm_n_multiply' }],
+  ['c4', 3, 'A ray enters a rectangular glass slab obliquely. The emergent ray is', ['parallel to the incident ray but shifted sideways', 'along the same line as the incident ray', 'perpendicular to the incident ray', 'bent towards the normal in air'], 0, { 1: 'm_slab_nodeviation' }],
+  ['c5', 1, 'A convex lens is also called a', ['diverging lens', 'converging lens', 'plane lens', 'dispersing lens'], 1, {}],
+  ['c5', 2, 'A convex lens forms a real, inverted image the same size as the object. The object is at', ['F', '2F', 'between F and O', 'infinity'], 1, {}],
+  ['c5', 3, 'An object is between F and the optical centre of a convex lens. The image is', ['real and inverted', 'virtual, erect and magnified', 'virtual, erect and diminished', 'real, erect and magnified'], 1, { 0: 'm_real_inverted_always' }],
+  ['c6', 1, 'The power of a lens is', ['P = f', 'P = 1/f with f in metres', 'P = f squared', 'P = 100 f'], 1, { 0: 'm_power_f' }],
+  ['c6', 2, 'A convex lens has focal length 25 cm. Its power is', ['+4 D', '-4 D', '+0.04 D', '+25 D'], 0, { 2: 'm_cm_units', 3: 'm_power_f' }],
+  ['c6', 3, 'An object is 20 cm from a convex lens of focal length 10 cm. The image distance is', ['+20 cm', '-20 cm', '+6.7 cm', '+10 cm'], 0, { 1: 'm_sign_convention' }],
+  ['c7', 1, 'The image in the human eye is formed on the', ['cornea', 'retina', 'iris', 'pupil'], 1, {}],
+  ['c7', 2, 'A person who cannot see distant objects clearly has', ['hypermetropia', 'myopia', 'presbyopia', 'cataract'], 1, { 0: 'm_eye_defect' }],
+  ['c7', 3, 'Myopia is corrected with a', ['convex lens', 'concave lens', 'plane mirror', 'prism'], 1, { 0: 'm_eye_defect' }],
+  ['c8', 1, 'Splitting of white light into its colours is called', ['reflection', 'dispersion', 'scattering', 'diffraction'], 1, {}],
+  ['c8', 2, 'Which colour bends the most in a glass prism?', ['red', 'violet', 'green', 'yellow'], 1, {}],
+  ['c8', 3, 'The Sun looks red at sunrise because', ['red light is scattered the most', 'blue light is scattered away, so red reaches us', 'the Sun is cooler then', 'the atmosphere adds red colour'], 1, { 3: 'm_prism_creates' }],
+  ['c9', 1, 'The SI unit of electric current is', ['volt', 'ampere', 'ohm', 'coulomb'], 1, {}],
+  ['c9', 2, 'A current of 2 A flows for 5 s. The charge that flows is', ['10 C', '2.5 C', '7 C', '0.4 C'], 0, {}],
+  ['c9', 3, 'A bulb is lit by a battery. Compared with the current entering the bulb, the current leaving it is', ['smaller, some is used up', 'the same', 'larger', 'zero'], 1, { 0: 'm_current_used' }],
+  ['c10', 1, "At constant temperature, Ohm's law says V is", ['inversely proportional to I', 'directly proportional to I', 'equal to I squared', 'independent of I'], 1, {}],
+  ['c10', 2, 'A conductor draws 0.5 A at 10 V. Its resistance is', ['20 ohm', '5 ohm', '0.05 ohm', '10 ohm'], 0, {}],
+  ['c10', 3, 'The potential difference across a fixed resistor doubles. Its resistance', ['doubles', 'halves', 'stays the same', 'becomes four times'], 2, { 0: 'm_r_depends_vi' }],
+  ['c11', 1, 'Resistance of a wire is inversely proportional to its', ['length', 'cross-sectional area', 'resistivity', 'temperature'], 1, { 0: 'm_resist_area' }],
+  ['c11', 2, 'A wire is stretched to double its length (volume constant). Its resistance becomes', ['double', 'four times', 'half', 'the same'], 1, {}],
+  ['c11', 3, 'Two wires have the same material and length; one has twice the diameter. R(thick) : R(thin) is', ['2 : 1', '1 : 2', '1 : 4', '4 : 1'], 2, { 3: 'm_resist_area' }],
+  ['c12', 1, 'In a series circuit, the quantity that is the same through every resistor is', ['voltage', 'current', 'power', 'resistance'], 1, {}],
+  ['c12', 2, 'Two 6 ohm resistors in parallel have an equivalent resistance of', ['12 ohm', '3 ohm', '6 ohm', '36 ohm'], 1, { 0: 'm_parallel_adds' }],
+  ['c12', 3, '4 ohm and 12 ohm resistors in parallel are connected to 12 V. The total current is', ['1 A', '4 A', '0.75 A', '3 A'], 1, { 2: 'm_parallel_adds' }],
+  ['c13', 1, 'Electric power is', ['V / I', 'V x I', 'I / V', 'V squared x I'], 1, {}],
+  ['c13', 2, 'A 100 W bulb runs for 10 hours. The energy used is', ['1 kWh', '10 kWh', '0.1 kWh', '1000 kWh'], 0, { 1: 'm_power_energy' }],
+  ['c13', 3, 'A heater of 50 ohm on 220 V has a power of', ['968 W', '4.4 W', '11000 W', '4.4 kW'], 0, {}],
+  ['c14', 1, 'Outside a bar magnet, field lines run from', ['south to north', 'north to south', 'east to west', 'centre to the ends'], 1, {}],
+  ['c14', 2, 'Two magnetic field lines', ['can cross where the field is weak', 'never intersect', 'cross at the poles', 'cross at a neutral point only'], 1, { 0: 'm_lines_cross', 2: 'm_lines_cross' }],
+  ['c14', 3, 'Inside a bar magnet, field lines run', ['north to south', 'south to north, forming closed loops', 'nowhere, there are none', 'across the magnet'], 1, { 0: 'm_lines_open' }],
+  ['c15', 1, 'A straight wire carrying current has a magnetic field in the form of', ['straight lines parallel to the wire', 'concentric circles around the wire', 'no field', 'lines radiating outward'], 1, {}],
+  ['c15', 2, 'In the right-hand thumb rule the thumb shows the current; the curled fingers show', ['force direction', 'direction of the magnetic field', 'direction of electron flow', 'direction of motion'], 1, { 0: 'm_rule_mix' }],
+  ['c15', 3, 'The number of turns in a solenoid is increased (same current). The field inside', ['decreases', 'increases', 'stays the same', 'becomes zero'], 1, {}],
+  ['c16', 1, 'The force on a current-carrying conductor in a magnetic field is greatest when the conductor is', ['parallel to the field', 'perpendicular to the field', 'at 45 degrees only', 'never any force'], 1, {}],
+  ['c16', 2, "In Fleming's left-hand rule the middle finger shows", ['force', 'current', 'magnetic field', 'motion of the magnet'], 1, { 0: 'm_rule_mix' }],
+  ['c16', 3, 'An electric motor converts', ['mechanical to electrical energy', 'electrical to mechanical energy', 'heat to electrical energy', 'chemical energy to light'], 1, { 0: 'm_motor_gen' }],
+  ['c17', 1, 'Electromagnetic induction is the production of', ['magnetic field by static charge', 'induced current by changing magnetic flux', 'heat in a wire', 'force on a charge'], 1, {}],
+  ['c17', 2, 'A magnet is held still inside a coil. The galvanometer shows', ['constant deflection', 'no deflection', 'maximum deflection', 'reverse deflection'], 1, { 0: 'm_flux_static' }],
+  ['c17', 3, 'An AC generator converts', ['electrical to mechanical energy', 'mechanical to electrical energy', 'light to electrical energy', 'sound to heat'], 1, { 0: 'm_motor_gen' }],
+];
+const PBANK: Q[] = R.map(([c, d, q, o, a, w]) => ({ id: `${c}-${d}`, c, d, q, o, a, w, src: 'bank' as const }));
+
+// Mathematics (Class 10, CBSE): its own syllabus graph, misconceptions and questions. Nothing is shared with Physics.
+const MATH: Omit<Concept, 's'>[] = [
+  { id: 'a1', name: 'Real numbers: HCF and LCM', unit: 'Number systems', pre: [] },
+  { id: 'a2', name: 'Zeros of polynomials', unit: 'Algebra', pre: [] },
+  { id: 'a3', name: 'Pair of linear equations', unit: 'Algebra', pre: [] },
+  { id: 'a4', name: 'Quadratic equations', unit: 'Algebra', pre: ['a2'] },
+  { id: 'a5', name: 'Arithmetic progressions', unit: 'Sequences', pre: [] },
+  { id: 'a6', name: 'Trigonometric ratios', unit: 'Trigonometry', pre: [] },
+];
+Object.assign(MISC, {
+  m_hcf_lcm: { name: 'HCF and LCM confused', fix: 'HCF is the largest number that divides both; LCM is the smallest number both divide. HCF is never bigger than either number; LCM is never smaller. For 12 and 18: HCF 6, LCM 36.' },
+  m_zero_sign: { name: 'Sign of a zero or of -b/a lost', fix: 'A zero is the x that makes the polynomial 0, so x - 5 has zero +5. For ax^2 + bx + c, sum of zeros = -b/a and product = c/a.' },
+  m_disc_forgot: { name: 'Discriminant computed without 4ac', fix: 'D = b^2 - 4ac. For x^2 - 4x + 4: 16 - 16 = 0, so the roots are real and equal.' },
+  m_ap_n: { name: 'nth term uses n instead of n - 1', fix: 'a_n = a + (n - 1)d. The first term already counts as term 1, so only n - 1 differences are added.' },
+  m_trig_ratio: { name: 'Ratio inverted or mixed up', fix: 'sin = opposite/hypotenuse, cos = adjacent/hypotenuse. If sin A = 3/5, the sides are 3, 4, 5, so cos A = 4/5.' },
+});
+const MR: Row[] = [
+  ['a1', 1, 'The HCF of 12 and 18 is', ['3', '6', '36', '72'], 1, { 2: 'm_hcf_lcm' }],
+  ['a1', 2, 'The LCM of 12 and 18 is', ['6', '36', '72', '216'], 1, { 0: 'm_hcf_lcm' }],
+  ['a1', 3, 'Two numbers have HCF 4 and LCM 24. One of them is 8. The other is', ['12', '3', '16', '6'], 0, {}],
+  ['a2', 1, 'The zero of the polynomial p(x) = x - 5 is', ['-5', '5', '0', '1'], 1, { 0: 'm_zero_sign' }],
+  ['a2', 2, 'The sum of the zeros of x^2 - 5x + 6 is', ['-5', '5', '6', '-6'], 1, { 0: 'm_zero_sign' }],
+  ['a2', 3, 'The product of the zeros of 2x^2 - 8x + 6 is', ['3', '-3', '4', '6'], 0, {}],
+  ['a3', 1, 'The solution of x + y = 5 and x - y = 1 is', ['(3, 2)', '(2, 3)', '(4, 1)', '(5, 0)'], 0, {}],
+  ['a3', 2, 'If 2x + 3y = 12 and x = 3, then y is', ['2', '3', '4', '6'], 0, {}],
+  ['a3', 3, 'The pair x + 2y = 4 and 2x + 4y = 8 has', ['a unique solution', 'no solution', 'infinitely many solutions', 'exactly two solutions'], 2, {}],
+  ['a4', 1, 'Which of these is a quadratic equation?', ['x + 1 = 0', 'x^2 + x = 0', 'x^3 = 1', '2x = 3'], 1, {}],
+  ['a4', 2, 'The roots of x^2 - 5x + 6 = 0 are', ['2 and 3', '-2 and -3', '1 and 6', '-1 and -6'], 0, { 1: 'm_zero_sign' }],
+  ['a4', 3, 'The discriminant of x^2 - 4x + 4 = 0 is', ['16', '0', '8', '-16'], 1, { 0: 'm_disc_forgot' }],
+  ['a5', 1, 'The common difference of 3, 7, 11, 15 is', ['3', '4', '7', '11'], 1, {}],
+  ['a5', 2, 'The 10th term of the AP 2, 5, 8, ... is', ['29', '32', '30', '27'], 0, { 1: 'm_ap_n' }],
+  ['a5', 3, 'The sum of the first 20 terms of the AP 1, 3, 5, ... is', ['200', '400', '420', '40'], 1, {}],
+  ['a6', 1, 'sin 30 degrees equals', ['1/2', 'sqrt3/2', '1', '0'], 0, {}],
+  ['a6', 2, 'sin^2 A + cos^2 A equals', ['0', '1', 'tan A', '2'], 1, {}],
+  ['a6', 3, 'If sin A = 3/5 and A is acute, cos A equals', ['4/5', '3/4', '5/4', '2/5'], 0, { 1: 'm_trig_ratio' }],
+];
+const toQ = (rows: Row[]): Q[] => rows.map(([c, d, q, o, a, w]) => ({ id: `${c}-${d}`, c, d, q, o, a, w, src: 'bank' as const }));
+export const SUBJECTS = [
+  { id: 'physics', name: 'Physics', level: 'school', syllabus: 'Class 10 CBSE' },
+  { id: 'maths', name: 'Mathematics', level: 'school', syllabus: 'Class 10 CBSE' },
+];
+export const CONCEPTS: Concept[] = [...PHYS.map((c) => ({ ...c, s: 'physics' })), ...MATH.map((c) => ({ ...c, s: 'maths' }))];
+export const BANK: Q[] = [...PBANK, ...toQ(MR)];
+export const subjectOf = (conceptId: string) => CONCEPTS.find((c) => c.id === conceptId)?.s;
+export const conceptsOf = (sub: string) => CONCEPTS.filter((c) => c.s === sub);

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Adhyora: Learn your way. Rise every day.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="root"></div>
+<noscript><p style="font:16px/1.5 system-ui;padding:24px">Adhyora needs JavaScript. Please enable it and reload.</p></noscript>
+<script>
+/* If the app has not drawn anything after a few seconds, say so instead of leaving a blank white page. */
+setTimeout(function () {
+  var r = document.getElementById('root');
+  if (r && !r.firstChild) r.innerHTML = '<p style="font:16px/1.5 system-ui;padding:24px;max-width:60ch">Adhyora could not start. Open the browser console (F12) to see the error, then reload. If you are the site owner: check the latest Vercel build log, and open /api/health.</p>';
+}, 4000);
+</script>
+<script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

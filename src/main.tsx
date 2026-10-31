@@ -1,0 +1,8 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import './landing.css';
+import { Landing } from './Landing';
+import { ErrorBoundary } from './ErrorBoundary';
+
+createRoot(document.getElementById('root')!).render(<StrictMode><ErrorBoundary><Landing /></ErrorBoundary></StrictMode>);
